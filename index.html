@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+    <head>
+        <title>discord bot chat</title>
+        <script>
+            var sse = new EventSource("messages");
+            sse.onmessage = function(event){
+                if(event.data == "connected!"){
+                    console.log("connected!!")
+                }
+                else{
+                    var data = JSON.parse(event.data);
+                    document.querySelector("#messages").innerHTML = `
+                    <div class="message">
+                        <h3>${data.tag}</h3>
+                        <h4>${data.content}</h4>
+                        <input id="message${data.msgindex}"><button onclick="replyto(${data.msgindex})">reply</button>
+                        </div>
+                    `+document.querySelector("#messages").innerHTML;
+                }
+            }
+            function replyto(index){
+                var datatosend = {
+                    msgindex:index,
+                    reply: document.querySelector("#message"+index).value
+                }
+                fetch("sendmsg/"+JSON.stringify(datatosend));
+            }
+        </script>
+    <style>
+        .message{
+            border-left: 2px solid grey;
+            margin-bottom: 5px;
+            padding-left: 5px;
+        }
+    </style>
+    </head>
+    <body>
+        <h1>Control the bot</h1>
+        <div id="messages">
+
+        </div>
+    </body>
+</html>
